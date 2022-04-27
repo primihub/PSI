@@ -16,6 +16,8 @@
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("//private_set_intersection/javascript/toolchain:cc_toolchain_config.bzl", "emsdk_configure")
+load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
+load("@rules_foreign_cc//foreign_cc:repositories.bzl", "rules_foreign_cc_dependencies")
 load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_proto_toolchains")
 load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
 load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
@@ -25,21 +27,63 @@ load("@io_bazel_rules_rust//rust:repositories.bzl", "rust_repositories")
 load("@io_bazel_rules_rust//proto:repositories.bzl", "rust_proto_repositories")
 load("@io_bazel_rules_rust//:workspace.bzl", "bazel_version")
 load("@com_github_grpc_grpc//bazel:grpc_deps.bzl", "grpc_deps")
-load("@build_bazel_rules_apple//apple:repositories.bzl", "apple_rules_dependencies")
+# load("@build_bazel_rules_apple//apple:repositories.bzl", "apple_rules_dependencies")
 load("//third_party/cargo:crates.bzl", "raze_fetch_remote_crates")
 load("@rules_proto_grpc//:repositories.bzl", "rules_proto_grpc_repos", "rules_proto_grpc_toolchains")
 load("@rules_proto_grpc//python:repositories.bzl", rules_proto_grpc_python_repos = "python_repos")
 
-def psi_deps():
+def psi_deps(repo_mapping = {}):
+    # openssl deps
+    rules_foreign_cc_dependencies()
+
+    maybe(
+        http_archive,
+        name = "openssl",
+        build_file = "@com_github_3rdparty_bazel_rules_openssl//:BUILD.openssl.bazel",
+        # sha256 = "892a0875b9872acd04a9fde79b1f943075d5ea162415de3047c327df33fbaee5",
+        strip_prefix = "openssl-1.1.1l",
+        urls = [
+            "https://www.openssl.org/source/openssl-1.1.1l.tar.gz",
+            # "https://github.com/openssl/openssl/archive/OpenSSL_1_1_1l.tar.gz",
+        ],
+        repo_mapping = repo_mapping,
+    )
+
+    maybe(
+        http_archive,
+        name = "nasm",
+        build_file = "@com_github_3rdparty_bazel_rules_openssl//:BUILD.nasm.bazel",
+        sha256 = "f5c93c146f52b4f1664fa3ce6579f961a910e869ab0dae431bd871bdd2584ef2",
+        strip_prefix = "nasm-2.15.05",
+        urls = [
+            "https://mirror.bazel.build/www.nasm.us/pub/nasm/releasebuilds/2.15.05/win64/nasm-2.15.05-win64.zip",
+            "https://www.nasm.us/pub/nasm/releasebuilds/2.15.05/win64/nasm-2.15.05-win64.zip",
+        ],
+        repo_mapping = repo_mapping,
+    )
+
+    maybe(
+        http_archive,
+        name = "perl",
+        build_file = "@com_github_3rdparty_bazel_rules_openssl//:BUILD.perl.bazel",
+        sha256 = "aeb973da474f14210d3e1a1f942dcf779e2ae7e71e4c535e6c53ebabe632cc98",
+        urls = [
+            "https://mirror.bazel.build/strawberryperl.com/download/5.32.1.1/strawberry-perl-5.32.1.1-64bit.zip",
+            "https://strawberryperl.com/download/5.32.1.1/strawberry-perl-5.32.1.1-64bit.zip",
+        ],
+        repo_mapping = repo_mapping,
+    )
+
     # General dependencies.
     if "private_join_and_compute" not in native.existing_rules():
         #TODO revert to the upstream repository when the https://github.com/google/private-join-and-compute/pull/21 is merged
         http_archive(
             name = "private_join_and_compute",
-            sha256 = "219f7cff49841901f8d88a7f84c9c8a61e69b5eb308a8535835743093eb4b595",
-            strip_prefix = "private-join-and-compute-ee2c581454fd895d9928fe27b7ba0d0ebfd8fda2",
-            url = "https://github.com/schoppmp/private-join-and-compute/archive/ee2c581454fd895d9928fe27b7ba0d0ebfd8fda2.zip",
+            # sha256 = "219f7cff49841901f8d88a7f84c9c8a61e69b5eb308a8535835743093eb4b595",
+            strip_prefix = "private-join-and-compute-master",
+            url = "https://gitlab.openmpc.com/openmpc/private-join-and-compute/-/archive/master/private-join-and-compute-master.zip",
         )
+        
 
     if "com_google_absl" not in native.existing_rules():
         http_archive(
@@ -65,13 +109,13 @@ def psi_deps():
             url = "https://github.com/google/benchmark/archive/8cead007830bdbe94b7cc259e873179d0ef84da6.zip",
         )
 
-    if "boringssl" not in native.existing_rules():
-        http_archive(
-            name = "boringssl",
-            sha256 = "7fefc298fa2a60fc04761768c2a3ded048cf69cc058e1167819546ef9efed325",
-            strip_prefix = "boringssl-38496d7d00af11364b0fdc9dbf8b181277fa5dab",
-            url = "https://github.com/google/boringssl/archive/38496d7d00af11364b0fdc9dbf8b181277fa5dab.zip",
-        )
+    # if "boringssl" not in native.existing_rules():
+    #     http_archive(
+    #         name = "boringssl",
+    #         sha256 = "7fefc298fa2a60fc04761768c2a3ded048cf69cc058e1167819546ef9efed325",
+    #         strip_prefix = "boringssl-38496d7d00af11364b0fdc9dbf8b181277fa5dab",
+    #         url = "https://github.com/google/boringssl/archive/38496d7d00af11364b0fdc9dbf8b181277fa5dab.zip",
+    #     )
 
     if "com_github_glog_glog" not in native.existing_rules():
         http_archive(
@@ -93,7 +137,7 @@ def psi_deps():
 
     # gRPC for PJC.
     grpc_deps()
-    apple_rules_dependencies()
+    # apple_rules_dependencies()
 
     # Language-specific dependencies.
 

@@ -15,8 +15,32 @@
 #
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
 
-def psi_preload():
+
+def psi_preload(external = True, repo_mapping = {}):
+
+    maybe(
+        http_archive,
+        name = "rules_foreign_cc",
+        url = "https://github.com/bazelbuild/rules_foreign_cc/archive/0.5.1.tar.gz",
+        sha256 = "33a5690733c5cc2ede39cb62ebf89e751f2448e27f20c8b2fbbc7d136b166804",
+        strip_prefix = "rules_foreign_cc-0.5.1",
+        repo_mapping = repo_mapping,
+    )
+
+    if external:
+        maybe(
+            git_repository,
+            name = "com_github_3rdparty_bazel_rules_openssl",
+            remote = "https://github.com/3rdparty/bazel-rules-openssl",
+            commit = "fd41d1a19c75dd82979c76fc0b2aadd6c4393e89",
+            shallow_since = "1632212203 +0000",
+            repo_mapping = repo_mapping,
+        )
+
+    
     if "rules_proto" not in native.existing_rules():
         http_archive(
             name = "rules_proto",
@@ -110,34 +134,35 @@ def psi_preload():
     if "com_github_grpc_grpc" not in native.existing_rules():
         http_archive(
             name = "com_github_grpc_grpc",
-            sha256 = "2060769f2d4b0d3535ba594b2ab614d7f68a492f786ab94b4318788d45e3278a",
-            strip_prefix = "grpc-1.33.2",
+            # sha256 = "2060769f2d4b0d3535ba594b2ab614d7f68a492f786ab94b4318788d45e3278a",
+            strip_prefix = "grpc-v1.42.x-openssl",
             urls = [
-                "https://github.com/grpc/grpc/archive/v1.33.2.tar.gz",
+                # "https://github.com/grpc/grpc/archive/v1.33.2.tar.gz",
+                "https://gitlab.openmpc.com/openmpc/grpc/-/archive/v1.42.x-openssl/grpc-v1.42.x-openssl.tar.gz"
             ],
         )
 
     # For gRPC.
-    if "build_bazel_rules_apple" not in native.existing_rules():
-        http_archive(
-            name = "build_bazel_rules_apple",
-            strip_prefix = "rules_apple-b869b0d3868d78a1d4ffd866ccb304fb68aa12c3",
-            sha256 = "bdc8e66e70b8a75da23b79f1f8c6207356df07d041d96d2189add7ee0780cf4e",
-            urls = [
-                "https://storage.googleapis.com/grpc-bazel-mirror/github.com/bazelbuild/rules_apple/archive/b869b0d3868d78a1d4ffd866ccb304fb68aa12c3.tar.gz",
-                "https://github.com/bazelbuild/rules_apple/archive/b869b0d3868d78a1d4ffd866ccb304fb68aa12c3.tar.gz",
-            ],
-        )
+    # if "build_bazel_rules_apple" not in native.existing_rules():
+    #     http_archive(
+    #         name = "build_bazel_rules_apple",
+    #         strip_prefix = "rules_apple-b869b0d3868d78a1d4ffd866ccb304fb68aa12c3",
+    #         sha256 = "bdc8e66e70b8a75da23b79f1f8c6207356df07d041d96d2189add7ee0780cf4e",
+    #         urls = [
+    #             "https://storage.googleapis.com/grpc-bazel-mirror/github.com/bazelbuild/rules_apple/archive/b869b0d3868d78a1d4ffd866ccb304fb68aa12c3.tar.gz",
+    #             "https://github.com/bazelbuild/rules_apple/archive/b869b0d3868d78a1d4ffd866ccb304fb68aa12c3.tar.gz",
+    #         ],
+    #     )
 
-    if "build_bazel_apple_support" not in native.existing_rules():
-        http_archive(
-            name = "build_bazel_apple_support",
-            urls = [
-                "https://storage.googleapis.com/grpc-bazel-mirror/github.com/bazelbuild/apple_support/releases/download/0.7.1/apple_support.0.7.1.tar.gz",
-                "https://github.com/bazelbuild/apple_support/releases/download/0.7.1/apple_support.0.7.1.tar.gz",
-            ],
-            sha256 = "122ebf7fe7d1c8e938af6aeaee0efe788a3a2449ece5a8d6a428cb18d6f88033",
-        )
+    # if "build_bazel_apple_support" not in native.existing_rules():
+    #     http_archive(
+    #         name = "build_bazel_apple_support",
+    #         urls = [
+    #             "https://storage.googleapis.com/grpc-bazel-mirror/github.com/bazelbuild/apple_support/releases/download/0.7.1/apple_support.0.7.1.tar.gz",
+    #             "https://github.com/bazelbuild/apple_support/releases/download/0.7.1/apple_support.0.7.1.tar.gz",
+    #         ],
+    #         sha256 = "122ebf7fe7d1c8e938af6aeaee0efe788a3a2449ece5a8d6a428cb18d6f88033",
+    #     )
 
     if "upb" not in native.existing_rules():
         http_archive(
