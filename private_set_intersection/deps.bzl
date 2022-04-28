@@ -161,7 +161,7 @@ def psi_deps(repo_mapping = {}):
     # Golang.
     go_rules_dependencies()
 
-    go_register_toolchains(version = "1.16")
+    go_register_toolchains(version = "1.16", go_version="1.16")
 
     rules_pkg_dependencies()
 
