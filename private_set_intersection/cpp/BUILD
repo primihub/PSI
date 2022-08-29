@@ -25,6 +25,7 @@ PSI_LINKOPTS = select({
         # https://github.com/google/cctz/issues/47
         # https://github.com/tensorflow/tensorflow/issues/15129
         "-lrt",
+        "-ldl",
     ],
 })
 
