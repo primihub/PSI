@@ -81,7 +81,7 @@ def psi_deps(repo_mapping = {}):
             name = "private_join_and_compute",
             # sha256 = "219f7cff49841901f8d88a7f84c9c8a61e69b5eb308a8535835743093eb4b595",
             strip_prefix = "private-join-and-compute-master",
-            url = "https://gitlab.openmpc.com/openmpc/private-join-and-compute/-/archive/master/private-join-and-compute-master.zip",
+            url = "https://gitlab.primihub.com/openmpc/private-join-and-compute/-/archive/master/private-join-and-compute-master.zip",
         )
         
 
