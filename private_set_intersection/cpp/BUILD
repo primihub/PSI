@@ -147,7 +147,7 @@ cc_library(
         "@com_google_absl//absl/types:span",
         "@private_join_and_compute//crypto:ec_commutative_cipher",
         "@com_google_absl//absl/status:statusor",
-        "@com_github_glog_glog:glog",
+        "@com_github_glog_glog//:glog",
     ],
 )
 
@@ -182,7 +182,7 @@ cc_library(
         "@com_google_absl//absl/types:span",
         "@private_join_and_compute//crypto:ec_commutative_cipher",
         "@com_google_absl//absl/status:statusor",
-        "@com_github_glog_glog:glog",
+        "@com_github_glog_glog//:glog",
     ],
 )
 
