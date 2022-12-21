@@ -75,7 +75,7 @@ StatusOr<psi_proto::Request> PsiClient::CreateRequest(
 
   // Add the encrypted elements
   for (int64_t i = 0; i < input_size; i++) {
-    request.add_encrypted_elements(encrypted_inputs[i]);
+    request.add_encrypted_elements(std::move(encrypted_inputs[i]));
   }
 
   return request;
@@ -124,7 +124,7 @@ StatusOr<std::vector<int64_t>> PsiClient::ProcessResponse(
   for (int64_t i = 0; i < response_size; i++) {
     ASSIGN_OR_RETURN(std::string element,
                      ec_cipher_->Decrypt(response_array[i]));
-    decrypted.push_back(element);
+    decrypted.push_back(std::move(element));
   }
 
   if (server_setup.data_structure_case() ==

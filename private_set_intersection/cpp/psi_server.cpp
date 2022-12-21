@@ -70,7 +70,7 @@ StatusOr<psi_proto::ServerSetup> PsiServer::CreateSetupMessage(
   for (int i = 0; i < num_inputs; i++) {
     ASSIGN_OR_RETURN(std::string encrypted_element,
                      ec_cipher_->Encrypt(inputs[i]));
-    encrypted.push_back(encrypted_element);
+    encrypted.push_back(std::move(encrypted_element));
   }
 
   if (ds == DataStructure::GCS) {
@@ -121,7 +121,7 @@ StatusOr<psi_proto::Response> PsiServer::ProcessRequest(
   for (int i = 0; i < num_client_elements; i++) {
     ASSIGN_OR_RETURN(std::string encrypted,
                      ec_cipher_->ReEncrypt(encrypted_elements[i]));
-    response.add_encrypted_elements(encrypted);
+    response.add_encrypted_elements(std::move(encrypted));
   }
 
   // sort the resulting ciphertexts if we want to hide the intersection from the
