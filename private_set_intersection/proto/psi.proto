@@ -43,6 +43,7 @@ message ServerSetup {
 message Request {
   bool reveal_intersection = 1;
   repeated bytes encrypted_elements = 2;
+  int32 seq_no = 3;
 }
 
 // Server response after encrypting client elements under the
@@ -50,4 +51,5 @@ message Request {
 // as an array of binary strings.
 message Response {
   repeated bytes encrypted_elements = 1;
+  int32 seq_no = 2;
 }
