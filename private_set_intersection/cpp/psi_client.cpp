@@ -15,8 +15,10 @@
 //
 
 #include "private_set_intersection/cpp/psi_client.h"
-
+#include <glog/logging.h>
+#include <chrono>
 #include <vector>
+
 
 #include "absl/memory/memory.h"
 #include "absl/strings/escaping.h"
@@ -74,10 +76,13 @@ StatusOr<psi_proto::Request> PsiClient::CreateRequest(
   request.set_reveal_intersection(reveal_intersection);
 
   // Add the encrypted elements
+  auto _start = std::chrono::high_resolution_clock::now();
   for (int64_t i = 0; i < input_size; i++) {
     request.add_encrypted_elements(std::move(encrypted_inputs[i]));
   }
-
+  auto _end = std::chrono::high_resolution_clock::now();
+  auto time_cost = std::chrono::duration_cast<std::chrono::milliseconds>(_end - _start).count();
+  VLOG(5) << "add encrypted elements time cost(ms): " << time_cost;
   return request;
 }
 

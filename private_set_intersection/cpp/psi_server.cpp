@@ -15,7 +15,8 @@
 //
 
 #include "private_set_intersection/cpp/psi_server.h"
-
+#include <glog/logging.h>
+#include <chrono>
 #include <vector>
 
 #include "absl/memory/memory.h"
@@ -66,29 +67,37 @@ StatusOr<psi_proto::ServerSetup> PsiServer::CreateSetupMessage(
   double corrected_fpr = fpr / num_client_inputs;
   std::vector<std::string> encrypted;
   encrypted.reserve(num_inputs);
-
+  auto _start = std::chrono::high_resolution_clock::now();
   for (int i = 0; i < num_inputs; i++) {
     ASSIGN_OR_RETURN(std::string encrypted_element,
                      ec_cipher_->Encrypt(inputs[i]));
     encrypted.push_back(std::move(encrypted_element));
   }
-
+  auto encrypted_end = std::chrono::high_resolution_clock::now();
+  auto time_cost = std::chrono::duration_cast<std::chrono::milliseconds>(encrypted_end - _start).count();
+  VLOG(5) << "Encrypt data count: " << num_inputs << " cost time(ms): " << time_cost;
   if (ds == DataStructure::GCS) {
     // Create a GCS and insert elements into it.
+    auto _start = std::chrono::high_resolution_clock::now();
     ASSIGN_OR_RETURN(
         auto gcs,
         GCS::Create(corrected_fpr,
                     absl::MakeConstSpan(&encrypted[0], encrypted.size())));
-
+    auto _end = std::chrono::high_resolution_clock::now();
+    auto time_cost = std::chrono::duration_cast<std::chrono::milliseconds>(_end - _start).count();
+    VLOG(5) << "GCS::Create cost time(ms): " << time_cost;
     // Return the GCS as a Protobuf
     return gcs->ToProtobuf();
   } else if (ds == DataStructure::BloomFilter) {
     // Create a Bloom Filter and insert elements into it.
+    auto _start = std::chrono::high_resolution_clock::now();
     ASSIGN_OR_RETURN(auto filter,
                      BloomFilter::Create(
                          corrected_fpr,
                          absl::MakeConstSpan(&encrypted[0], encrypted.size())));
-
+    auto _end = std::chrono::high_resolution_clock::now();
+    auto time_cost = std::chrono::duration_cast<std::chrono::milliseconds>(_end - _start).count();
+    VLOG(5) << "BloomFilter::Create cost time(ms): " << time_cost;
     // Return the Bloom Filter as a Protobuf
     return filter->ToProtobuf();
   } else {
