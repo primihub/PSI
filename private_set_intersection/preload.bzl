@@ -139,7 +139,7 @@ def psi_preload(external = True, repo_mapping = {}):
             strip_prefix = "grpc-v1.42.x-openssl",
             urls = [
                 # "https://github.com/grpc/grpc/archive/v1.33.2.tar.gz",
-                "https://gitlab.openmpc.com/openmpc/grpc/-/archive/v1.42.x-openssl/grpc-v1.42.x-openssl.tar.gz"
+                "https://primihub.oss-cn-beijing.aliyuncs.com/tools/grpc-v1.42.x-openssl.tar.gz"
             ],
         )
 
@@ -178,7 +178,10 @@ def psi_preload(external = True, repo_mapping = {}):
     if "rules_proto_grpc" not in native.existing_rules():
         http_archive(
             name = "rules_proto_grpc",
-            urls = ["https://github.com/rules-proto-grpc/rules_proto_grpc/archive/2.0.0.tar.gz"],
+            urls = [
+              #"https://github.com/rules-proto-grpc/rules_proto_grpc/archive/2.0.0.tar.gz",
+              "https://primihub.oss-cn-beijing.aliyuncs.com/tools/rules_proto_grpc-2.0.0.tar.gz"
+            ],
             sha256 = "d771584bbff98698e7cb3cb31c132ee206a972569f4dc8b65acbdd934d156b33",
             strip_prefix = "rules_proto_grpc-2.0.0",
         )
