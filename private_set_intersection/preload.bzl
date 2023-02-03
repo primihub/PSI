@@ -118,7 +118,8 @@ def psi_preload(external = True, repo_mapping = {}):
             strip_prefix = "rules_rust-8cfa049d478ad33e407d572e260e912bdb31796a",
             urls = [
                 # Master branch as of 25/07/2020
-                "https://github.com/bazelbuild/rules_rust/archive/8cfa049d478ad33e407d572e260e912bdb31796a.tar.gz",
+                # "https://github.com/bazelbuild/rules_rust/archive/8cfa049d478ad33e407d572e260e912bdb31796a.tar.gz",
+                "https://primihub.oss-cn-beijing.aliyuncs.com/tools/rules_rust-8cfa049d478ad33e407d572e260e912bdb31796a.tar.gz",
             ],
         )
 
